@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,14 +21,24 @@ namespace ItbLearn.WpfApp
     /// </summary>
     public partial class MainWindow : Window
     {
+        private static readonly HttpClient httpClient = new HttpClient();
+        
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("9:00に出社しました！");
+            var response = await httpClient.GetAsync("https://func-sampleapi-kaneko03.azurewebsites.net/api/function");
+            if (response.IsSuccessStatusCode)
+            {
+                string responseBody = await response.Content.ReadAsStringAsync();
+                MessageBox.Show(responseBody);
+
+            }
+            
+
         }
     }
 }
