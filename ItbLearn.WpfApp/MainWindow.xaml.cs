@@ -1,8 +1,10 @@
-﻿using System;
+﻿using ItbLearn.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -30,7 +32,17 @@ namespace ItbLearn.WpfApp
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            var response = await httpClient.GetAsync("https://func-sampleapi-kaneko03.azurewebsites.net/api/function");
+            var now = DateTimeOffset.Now;
+            var userName = "taro";
+            var timecard = new TimeCard(userName,now);
+
+            var option = new JsonSerializerOptions();
+            option.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            var json = JsonSerializer.Serialize(timecard,option);
+
+            var content = new StringContent(json,Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PostAsync("https://app-timecards-onodera.azurewebsites.net/api/timecards",content);
             if (response.IsSuccessStatusCode)
             {
                 string responseBody = await response.Content.ReadAsStringAsync();
